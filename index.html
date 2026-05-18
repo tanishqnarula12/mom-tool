@@ -441,7 +441,7 @@
   .bullet-list { list-style: none; }
   .bullet-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     margin-bottom: 10px;
     border-radius: var(--radius);
@@ -468,13 +468,31 @@
   }
   .drag-handle:hover { opacity: 1; color: var(--accent); }
   .drag-handle:active { cursor: grabbing; }
+  .bullet-item .drag-handle {
+    margin-top: 8px;
+  }
   .bullet-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--accent-light);
     flex-shrink: 0;
   }
-  .bullet-item input { flex: 1; }
+  .bullet-item .bullet-dot {
+    margin-top: 15px;
+  }
+  .bullet-item textarea {
+    flex: 1;
+    min-height: 38px;
+    height: 38px;
+    resize: none;
+    overflow-y: hidden;
+    line-height: 1.4;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .bullet-item .btn-danger {
+    margin-top: 1px;
+  }
   .bullet-item .btn-danger { flex-shrink: 0; }
 
   /* ─── RECOMMENDATION CARDS ─── */
@@ -1557,6 +1575,12 @@ function removeRow(id) {
   if (el) el.remove();
 }
 
+// ─── AUTO-GROW TEXTAREA FOR BULLETS ───
+function autoGrowTextarea(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
 // ─── BULLET POINTS ───
 function addBullet(listId) {
   discussionCount++;
@@ -1568,7 +1592,7 @@ function addBullet(listId) {
   li.innerHTML = `
     <span class="drag-handle" title="Drag to reorder">⠿</span>
     <div class="bullet-dot"></div>
-    <input type="text" placeholder="Discussion point...">
+    <textarea placeholder="Discussion point..." rows="1" oninput="autoGrowTextarea(this)"></textarea>
     <button class="btn btn-danger" onclick="removeRow('bullet${discussionCount}')">✕</button>
   `;
   // Drag events
@@ -1761,7 +1785,7 @@ function generateMOM() {
   }).filter(r => r.rec);
 
   // Collect discussion
-  const discussion = [...document.querySelectorAll('#discussionList .bullet-item input')].map(i => i.value).filter(v => v);
+  const discussion = [...document.querySelectorAll('#discussionList .bullet-item textarea')].map(i => i.value).filter(v => v);
 
   // Collect recommendations by column
   const ourRecs = collectRecs('our');
@@ -2227,8 +2251,11 @@ function fillFormFromJSON(d) {
     discussionCount = 0;
     d.discussion.forEach(point => {
       addBullet('discussionList');
-      const inputs = document.querySelectorAll('#discussionList .bullet-item input');
-      if (inputs.length) inputs[inputs.length - 1].value = point;
+      const inputs = document.querySelectorAll('#discussionList .bullet-item textarea');
+      if (inputs.length) {
+        inputs[inputs.length - 1].value = point;
+        autoGrowTextarea(inputs[inputs.length - 1]);
+      }
     });
   }
 
