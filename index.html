@@ -843,7 +843,7 @@
     <div class="progress-step active" onclick="goTo(0)"><span class="step-num">01</span>Basic Details</div>
     <div class="progress-step" onclick="goTo(1)"><span class="step-num">02</span>Client Profile</div>
     <div class="progress-step" onclick="goTo(2)"><span class="step-num">03</span>Investments</div>
-    <div class="progress-step" onclick="goTo(3)"><span class="step-num">04</span>Prev. Review</div>
+    <div class="progress-step" onclick="goTo(3)"><span class="step-num">04</span>Prev. To Do</div>
     <div class="progress-step" onclick="goTo(4)"><span class="step-num">05</span>Agenda</div>
     <div class="progress-step" onclick="goTo(5)"><span class="step-num">06</span>Discussion</div>
     <div class="progress-step" onclick="goTo(6)"><span class="step-num">07</span>To Do List</div>
@@ -870,29 +870,14 @@
           </div>
         </div>
         <div class="field">
-          <label>Client Name <span class="req">*</span></label>
-          <input type="text" id="clientName" placeholder="e.g. Rajesh Sharma" list="clientList" oninput="autoFillClient(this.value)">
-          <datalist id="clientList">
-            <option value="Rajesh Sharma">
-            <option value="Meena Agarwal">
-            <option value="Suresh Patel">
-            <option value="Anita Joshi">
-            <option value="Vikram Mehta">
-          </datalist>
-        </div>
-        <div class="field">
-          <label>Advisor Name <span class="req">*</span></label>
-          <input type="text" id="advisorName" placeholder="e.g. Arjun Kapoor">
+          <label>Financial Consultant <span class="req">*</span></label>
+          <input type="text" id="advisorName" placeholder="e.g. Arjun Kapoor" value="Nitesh Luthra">
         </div>
       </div>
-      <div class="field-group cols-3">
+      <div class="field-group cols-2">
         <div class="field">
           <label>Meeting Date <span class="req">*</span></label>
           <input type="date" id="meetingDate">
-        </div>
-        <div class="field">
-          <label>Meeting Time</label>
-          <input type="time" id="meetingTime">
         </div>
         <div class="field">
           <label>Mode of Meeting</label>
@@ -929,14 +914,36 @@
         </div>
         <div class="field">
           <label>Occupation</label>
-          <input type="text" id="occupation" placeholder="e.g. Business Owner, Salaried, Doctor">
+          <select id="occupation" onchange="toggleOccupationOther(this)">
+            <option value="">Select Occupation</option>
+            <option value="Salaried – Private Sector">Salaried – Private Sector</option>
+            <option value="Salaried – Government Sector">Salaried – Government Sector</option>
+            <option value="Business">Business</option>
+            <option value="Self-Employed">Self-Employed</option>
+            <option value="Professional">Professional</option>
+            <option value="Agriculturist / Farmer">Agriculturist / Farmer</option>
+            <option value="Retired">Retired</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Student">Student</option>
+            <option value="Defence Personnel">Defence Personnel</option>
+            <option value="NRI">NRI</option>
+            <option value="Others">Others (Please Specify)</option>
+          </select>
+        </div>
+        <div class="field" id="occupationOtherField" style="display:none;">
+          <label>Specify Other Occupation</label>
+          <input type="text" id="occupationOther" placeholder="Specify here">
         </div>
       </div>
 
-      <div class="field-group cols-2" style="margin-top:4px;">
+      <div class="field-group cols-3" style="margin-top:4px;">
         <div class="field">
           <label>Annual Income (₹)</label>
           <input type="number" id="income" placeholder="e.g. 1200000" min="0">
+        </div>
+        <div class="field">
+          <label>Annual Expenses (₹)</label>
+          <input type="number" id="expenses" placeholder="e.g. 600000" min="0">
         </div>
         <div class="field">
           <label>Marital Status</label>
@@ -1024,6 +1031,30 @@
           </div>
           <input type="hidden" id="estate" value="">
         </div>
+        <div class="field">
+          <label>Fixed Deposit</label>
+          <div class="toggle-group">
+            <div class="toggle-opt" onclick="setToggle(this,'fd','Yes')">Yes</div>
+            <div class="toggle-opt" onclick="setToggle(this,'fd','No')">No</div>
+          </div>
+          <input type="hidden" id="fd" value="">
+        </div>
+        <div class="field">
+          <label>Stocks</label>
+          <div class="toggle-group">
+            <div class="toggle-opt" onclick="setToggle(this,'stocks','Yes')">Yes</div>
+            <div class="toggle-opt" onclick="setToggle(this,'stocks','No')">No</div>
+          </div>
+          <input type="hidden" id="stocks" value="">
+        </div>
+        <div class="field">
+          <label>Real Estate</label>
+          <div class="toggle-group">
+            <div class="toggle-opt" onclick="setToggle(this,'realestate','Yes')">Yes</div>
+            <div class="toggle-opt" onclick="setToggle(this,'realestate','No')">No</div>
+          </div>
+          <input type="hidden" id="realestate" value="">
+        </div>
       </div>
 
       <hr class="divider">
@@ -1031,14 +1062,15 @@
       <p style="font-size:12px;color:var(--ink-muted);margin-bottom:12px;">Select goals, then fill in Target & Accumulated values to auto-calculate completion %.</p>
       <div class="chip-group" id="goalChips">
         <div class="chip" onclick="toggleGoalChip(this,'Retirement')">Retirement</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Child Education')">Child Education</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Child Marriage')">Child Marriage</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Home Purchase')">Home Purchase</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Wealth Creation')">Wealth Creation</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Kid\'s education')">Kid's education</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Kids\'s Marriage')">Kids's Marriage</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Dream Home')">Dream Home</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Dream Car')">Dream Car</div>
         <div class="chip" onclick="toggleGoalChip(this,'Emergency Fund')">Emergency Fund</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Vacation / Travel')">Vacation / Travel</div>
         <div class="chip" onclick="toggleGoalChip(this,'Tax Saving')">Tax Saving</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Vacation')">Vacation</div>
-        <div class="chip" onclick="toggleGoalChip(this,'Vehicle')">Vehicle</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Higher Education')">Higher Education</div>
+        <div class="chip" onclick="toggleGoalChip(this,'Wedding Planning')">Wedding Planning</div>
       </div>
       <!-- Goal value panels injected here -->
       <div id="goalPanels" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;"></div>
@@ -1059,48 +1091,51 @@
     </div>
   </div>
 
-  <!-- ── SECTION 3: PREVIOUS MEETING REVIEW ── -->
+  <!-- ── SECTION 3: PREVIOUS MEETING TO DO LIST ── -->
   <div class="section" id="sec3">
     <div class="section-header">
       <div class="section-icon">📋</div>
       <div>
         <div class="section-label">Section 04</div>
-        <div class="section-title">Previous Meeting Review</div>
+        <div class="section-title">Previous Meeting To Do List</div>
       </div>
     </div>
     <div class="section-body">
       <div class="subsection-title">Last Meeting Info</div>
-      <div class="field-group cols-2">
-        <div class="field">
-          <label>Last Meeting Date</label>
-          <input type="date" id="lastMeetingDate">
-        </div>
-        <div class="field">
-          <label>Last Meeting Purpose</label>
-          <input type="text" id="lastMeetingPurpose" placeholder="e.g. Portfolio Review, New SIP">
-        </div>
+      <div class="field">
+        <label>Last Meeting Date</label>
+        <input type="date" id="lastMeetingDate">
       </div>
 
       <hr class="divider">
-      <div class="subsection-title">Previous Recommendations Status</div>
-      <div style="overflow-x:auto;">
-        <table class="mom-table" id="prevRecTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th style="min-width:200px">Recommendation</th>
-              <th style="min-width:130px">Type</th>
-              <th style="min-width:130px">Status</th>
-              <th style="min-width:140px">Remarks</th>
-              <th class="col-action"></th>
-            </tr>
-          </thead>
-          <tbody id="prevRecBody">
-            <!-- rows added via JS -->
-          </tbody>
-        </table>
+      <div class="subsection-title">Previous Meeting To Do List</div>
+      <p style="font-size:12.5px;color:var(--ink-muted);margin-bottom:16px;">Add previous recommendations to each column. <strong>Our End</strong> = actions we were supposed to take. <strong>Client End</strong> = actions the client was supposed to take.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;" class="rec-columns">
+        <!-- Our End -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;background:#e8f0fd;border-radius:8px;border-left:3px solid var(--accent);">
+            <span style="font-size:15px;">🏢</span>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Our End</div>
+              <div style="font-size:11px;color:var(--ink-muted);">Actions we (advisor) were to take</div>
+            </div>
+          </div>
+          <div id="prevOurEndCards"></div>
+          <button class="add-row-btn" style="width:100%;" onclick="addPrevRecCard('our')">+ Add Previous Our End Action</button>
+        </div>
+        <!-- Client End -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 14px;background:#fef6e4;border-radius:8px;border-left:3px solid #c47c05;">
+            <span style="font-size:15px;">👤</span>
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#c47c05;">Client End</div>
+              <div style="font-size:11px;color:var(--ink-muted);">Actions client was to take</div>
+            </div>
+          </div>
+          <div id="prevClientEndCards"></div>
+          <button class="add-row-btn" style="width:100%;border-color:#c47c05;color:#c47c05;" onclick="addPrevRecCard('client')">+ Add Previous Client Action</button>
+        </div>
       </div>
-      <button class="add-row-btn" onclick="addPrevRec()">+ Add Recommendation</button>
 
       <div class="section-nav">
         <button class="btn btn-ghost" style="color:var(--ink-soft);border:1px solid var(--border)" onclick="prevSection()">← Back</button>
@@ -1338,12 +1373,7 @@ window.onload = () => {
   addRecCard('client');
   addBullet('discussionList');
 
-  // Auto-fill profileClientName from clientName
-  const clientInput = document.getElementById('clientName');
-  const profileInput = document.getElementById('profileClientName');
-  clientInput.addEventListener('input', () => {
-    if (profileInput) profileInput.value = clientInput.value;
-  });
+  // Auto-fill profileClientName logic removed as clientName is no longer present
 };
 
 // ─── FOLLOWUP DRAFT TOGGLE ───
@@ -1353,6 +1383,16 @@ function updateFollowupDraftToggle(checkbox) {
   const badge = document.getElementById('followupToggleBadge');
   badge.textContent = checkbox.checked ? 'On' : 'Off';
   badge.className = checkbox.checked ? 'on-badge' : 'off-badge';
+}
+
+function toggleOccupationOther(sel) {
+  const f = document.getElementById('occupationOtherField');
+  if (sel.value === 'Others') {
+    f.style.display = 'flex';
+  } else {
+    f.style.display = 'none';
+    document.getElementById('occupationOther').value = '';
+  }
 }
 
 // ─── SPOUSE & KIDS ───
@@ -1455,8 +1495,10 @@ function toggleGoalChip(el, goalName) {
 function addGoalPanel(goalName) {
   if (!goalData[goalName]) goalData[goalName] = { target: '', accumulated: '' };
   const container = document.getElementById('goalPanels');
-  const id = 'gp-' + goalName.replace(/\s+/g, '-');
+  const safeId = btoa(encodeURIComponent(goalName)).replace(/=/g, '');
+  const id = 'gp-' + safeId;
   if (document.getElementById(id)) return;
+  const escapedName = goalName.replace(/'/g, "\\'");
   const div = document.createElement('div');
   div.className = 'goal-panel';
   div.id = id;
@@ -1468,28 +1510,29 @@ function addGoalPanel(goalName) {
     <div class="goal-fields">
       <div class="field">
         <label>Target Value (₹)</label>
-        <input type="number" id="gt-${goalName}" placeholder="e.g. 50,00,000"
-          oninput="updateGoalCalc('${goalName}')" min="0">
+        <input type="number" id="gt-${safeId}" placeholder="e.g. 50,00,000"
+          oninput="updateGoalCalc('${escapedName}', '${safeId}')" min="0">
       </div>
       <div class="field">
         <label>Accumulated (₹)</label>
-        <input type="number" id="ga-${goalName}" placeholder="e.g. 12,00,000"
-          oninput="updateGoalCalc('${goalName}')" min="0">
+        <input type="number" id="ga-${safeId}" placeholder="e.g. 12,00,000"
+          oninput="updateGoalCalc('${escapedName}', '${safeId}')" min="0">
       </div>
     </div>
     <div class="goal-progress-wrap">
       <span class="goal-progress-label">Completion</span>
       <div class="goal-progress-bar">
-        <div class="goal-progress-fill" id="gbar-${goalName}" style="width:0%"></div>
+        <div class="goal-progress-fill" id="gbar-${safeId}" style="width:0%"></div>
       </div>
-      <div class="goal-pct" id="gpct-${goalName}">—</div>
+      <div class="goal-pct" id="gpct-${safeId}">—</div>
     </div>
   `;
   container.appendChild(div);
 }
 
 function removeGoalPanel(goalName) {
-  const id = 'gp-' + goalName.replace(/\s+/g, '-');
+  const safeId = btoa(encodeURIComponent(goalName)).replace(/=/g, '');
+  const id = 'gp-' + safeId;
   const el = document.getElementById(id);
   if (el) el.remove();
   delete goalData[goalName];
@@ -1510,13 +1553,14 @@ function addCustomGoal() {
   inp.value = '';
 }
 
-function updateGoalCalc(goalName) {
-  const t = parseFloat(document.getElementById('gt-' + goalName)?.value) || 0;
-  const a = parseFloat(document.getElementById('ga-' + goalName)?.value) || 0;
+function updateGoalCalc(goalName, safeId) {
+  if (!safeId) safeId = btoa(encodeURIComponent(goalName)).replace(/=/g, '');
+  const t = parseFloat(document.getElementById('gt-' + safeId)?.value) || 0;
+  const a = parseFloat(document.getElementById('ga-' + safeId)?.value) || 0;
   goalData[goalName] = { target: t, accumulated: a };
   const pct = t > 0 ? Math.min(100, Math.round((a / t) * 100)) : 0;
-  const pctEl = document.getElementById('gpct-' + goalName);
-  const barEl = document.getElementById('gbar-' + goalName);
+  const pctEl = document.getElementById('gpct-' + safeId);
+  const barEl = document.getElementById('gbar-' + safeId);
   if (pctEl) pctEl.textContent = t > 0 ? pct + '%' : '—';
   if (barEl) {
     barEl.style.width = pct + '%';
@@ -1535,41 +1579,60 @@ function getGoalDetails() {
   });
 }
 
-// ─── PREVIOUS RECS TABLE ───
-function addPrevRec() {
-  prevRecCount++;
-  const tbody = document.getElementById('prevRecBody');
-  const tr = document.createElement('tr');
-  tr.id = `prevRec${prevRecCount}`;
-  tr.innerHTML = `
-    <td style="color:var(--ink-muted);font-weight:600;text-align:center">${prevRecCount}</td>
-    <td><input type="text" placeholder="e.g. Start SIP ₹5,000 in Parag Parikh Fund"></td>
-    <td>
-      <select>
-        <option value="">Type</option>
-        <option>SIP</option>
-        <option>Lumpsum</option>
-        <option>Insurance</option>
-        <option>Redemption</option>
-        <option>Other</option>
-      </select>
-    </td>
-    <td>
-      <select onchange="styleStatusCell(this)">
-        <option value="">Status</option>
-        <option>Executed</option>
-        <option>Pending</option>
-        <option>Dropped</option>
-      </select>
-    </td>
-    <td><input type="text" placeholder="Remarks"></td>
-    <td class="col-action"><button class="btn btn-danger btn-icon" onclick="removeRow('prevRec${prevRecCount}')">✕</button></td>
+let prevOurRecCount = 0;
+let prevClientRecCount = 0;
+
+function addPrevRecCard(side) {
+  const isOur = side === 'our';
+  if (isOur) prevOurRecCount++; else prevClientRecCount++;
+  const num = isOur ? prevOurRecCount : prevClientRecCount;
+  const prefix = isOur ? 'prev-our' : 'prev-cli';
+  const containerId = isOur ? 'prevOurEndCards' : 'prevClientEndCards';
+  const container = document.getElementById(containerId);
+  const card = document.createElement('div');
+  card.className = 'rec-card';
+  card.id = `rec-${prefix}-${num}`;
+  const accentColor = isOur ? 'var(--accent)' : '#c47c05';
+  const phText = isOur
+    ? 'e.g. Started SIP of ₹10,000 in HDFC Mid Cap'
+    : 'e.g. Submitted KYC documents';
+  card.innerHTML = `
+    <div class="rec-card-header">
+      <div class="rec-card-num" style="background:${accentColor}">${num}</div>
+      <div style="flex:1;font-weight:600;font-size:12.5px;color:var(--ink-soft)">${isOur ? 'Our Action' : 'Client Action'} #${num}</div>
+      <button class="btn btn-danger" onclick="removeRow('rec-${prefix}-${num}')">✕</button>
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <label>Recommendation</label>
+      <input type="text" id="recText-${prefix}-${num}" placeholder="${phText}">
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <div class="decision-group">
+        <div class="decision-opt" onclick="setDecision(this,'recDec-${prefix}-${num}','Executed')">✅ Executed</div>
+        <div class="decision-opt" onclick="setDecision(this,'recDec-${prefix}-${num}','Pending')">⏳ Pending</div>
+        <div class="decision-opt" onclick="setDecision(this,'recDec-${prefix}-${num}','Dropped')">❌ Dropped</div>
+      </div>
+      <input type="hidden" id="recDec-${prefix}-${num}" value="">
+    </div>
   `;
-  tbody.appendChild(tr);
+  container.appendChild(card);
 }
-function styleStatusCell(sel) {
-  sel.style.color = sel.value === 'Executed' ? '#1044a3' : sel.value === 'Pending' ? '#b8860b' : sel.value === 'Dropped' ? '#991b1b' : '';
+
+function collectPrevRecs(side) {
+  const prefix = side === 'our' ? 'prev-our' : 'prev-cli';
+  const count = side === 'our' ? prevOurRecCount : prevClientRecCount;
+  const recs = [];
+  for (let i = 1; i <= count; i++) {
+    const el = document.getElementById(`rec-${prefix}-${i}`);
+    if (!el) continue;
+    const text = document.getElementById(`recText-${prefix}-${i}`)?.value;
+    const dec = document.getElementById(`recDec-${prefix}-${i}`)?.value;
+    if (text) recs.push({ text, status: dec });
+  }
+  return recs;
 }
+
 function removeRow(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
@@ -1686,7 +1749,7 @@ function setTag(el, field, val) {
 }
 function setDecision(el, field, val) {
   el.parentElement.querySelectorAll('.decision-opt').forEach(o => o.classList.remove('agreed','not-agreed','thinking'));
-  const cls = val === 'Agreed' ? 'agreed' : val === 'Not Agreed' ? 'not-agreed' : 'thinking';
+  const cls = (val === 'Agreed' || val === 'Executed') ? 'agreed' : (val === 'Not Agreed' || val === 'Dropped') ? 'not-agreed' : 'thinking';
   el.classList.add(cls);
   document.getElementById(field).value = val;
 }
@@ -1722,10 +1785,13 @@ const investmentIcons = {
   'Medical Insurance':     '🏥',
   'Accidental Insurance':  '🚑',
   'Will & Estate Planning':'📜',
+  'Fixed Deposit':         '🏦',
+  'Stocks':                '📊',
+  'Real Estate':           '🏢',
 };
 
 const goalIcons = {
-  'Retirement':      '🧓',
+  'Retirement':      '🪑',
   'Child Education': '🎓',
   'Child Marriage':  '💍',
   'Home Purchase':   '🏠',
@@ -1743,27 +1809,31 @@ function getGoalIcon(name) {
 function generateMOM() {
   const meetingNumberRaw = document.getElementById('meetingNumber').value.trim();
   const meetingNumber = meetingNumberRaw ? 'MOM - ' + meetingNumberRaw : '';
-  const client = document.getElementById('clientName').value || '—';
+  const client = document.getElementById('profileClientName').value || '—';
 
   // Client Profile
   const profileClientName = document.getElementById('profileClientName').value || '';
-  const occupation        = document.getElementById('occupation').value || '';
+  let occupation = document.getElementById('occupation').value || '';
+  if (occupation === 'Others') occupation = document.getElementById('occupationOther').value;
   const income            = document.getElementById('income').value || '';
+  const expenses          = document.getElementById('expenses').value || '';
   const maritalStatus     = document.getElementById('maritalStatus').value || '';
   const spouseName        = document.getElementById('spouseName').value || '';
   const kids              = getKidsData();
   const advisor = document.getElementById('advisorName').value || '—';
   const date = document.getElementById('meetingDate').value;
-  const time = document.getElementById('meetingTime').value;
   const mode = document.getElementById('meetingMode').value || '—';
   const mf = document.getElementById('mf').value;
   const term = document.getElementById('term').value;
   const medical = document.getElementById('medical').value;
   const accidental = document.getElementById('accidental').value;
   const estate = document.getElementById('estate').value;
+  const fd = document.getElementById('fd').value;
+  const stocks = document.getElementById('stocks').value;
+  const realestate = document.getElementById('realestate').value;
   const goalDetails = getGoalDetails();
   const lastDate = document.getElementById('lastMeetingDate').value;
-  const lastPurpose = document.getElementById('lastMeetingPurpose').value;
+  const lastPurpose = "";
   const agenda = getSelectedChips('agendaChips');
   const agendaOther = document.getElementById('agendaOther').value;
   if (agendaOther) agenda.push(agendaOther);
@@ -1774,15 +1844,8 @@ function generateMOM() {
   const followupNotes = document.getElementById('followupNotes').value;
 
   // Collect prev recs
-  const prevRows = [...document.querySelectorAll('#prevRecBody tr')].map(tr => {
-    const inputs = tr.querySelectorAll('input, select');
-    return {
-      rec: inputs[0]?.value || '',
-      type: inputs[1]?.value || '',
-      status: inputs[2]?.value || '',
-      remarks: inputs[3]?.value || ''
-    };
-  }).filter(r => r.rec);
+  const prevOurRecs = collectPrevRecs('our');
+  const prevClientRecs = collectPrevRecs('client');
 
   // Collect discussion
   const discussion = [...document.querySelectorAll('#discussionList .bullet-item textarea')].map(i => i.value).filter(v => v);
@@ -1800,7 +1863,7 @@ function generateMOM() {
 
   const badgeColor = s => s === 'Executed' ? '#1044a3' : s === 'Pending' ? '#b8860b' : '#991b1b';
   const badgeBg = s => s === 'Executed' ? '#e6f4ea' : s === 'Pending' ? '#fdf8ec' : '#f4e6e6';
-  const decIcon = d => d === 'Agreed' ? '✅' : d === 'Not Agreed' ? '❌' : d === 'Thinking' ? '🤔' : '—';
+  const decIcon = d => d === 'Agreed' || d === 'Executed' ? '✅' : d === 'Not Agreed' || d === 'Dropped' ? '❌' : d === 'Thinking' ? '🤔' : d === 'Pending' ? '⏳' : '—';
 
   const html = `
   <div style="font-family:'DM Sans',sans-serif;max-width:800px;margin:0 auto;">
@@ -1818,18 +1881,17 @@ function generateMOM() {
         <div style="text-align:right;">
           ${meetingNumber ? `<div style="font-size:11px;opacity:0.55;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">${meetingNumber}</div>` : ''}
           <div style="font-size:20px;font-weight:700;color:#bfd4ff;">${formatDate(date)}</div>
-          <div style="font-size:12px;opacity:0.6;margin-top:2px;">${time || ''} ${mode !== '—' ? '· ' + mode : ''}</div>
+          <div style="font-size:12px;opacity:0.6;margin-top:2px;">${mode !== '—' ? 'Mode of Meeting: ' + mode : ''}</div>
         </div>
       </div>
       <div style="display:flex;gap:30px;margin-top:22px;flex-wrap:wrap;">
-        <div><div style="font-size:10px;opacity:0.5;letter-spacing:1px;text-transform:uppercase;">Client</div><div style="font-size:15px;font-weight:600;margin-top:2px;">${client}</div></div>
-        <div><div style="font-size:10px;opacity:0.5;letter-spacing:1px;text-transform:uppercase;">Advisor</div><div style="font-size:15px;font-weight:600;margin-top:2px;">${advisor}</div></div>
+        <div><div style="font-size:10px;opacity:0.5;letter-spacing:1px;text-transform:uppercase;">Financial Consultant</div><div style="font-size:15px;font-weight:600;margin-top:2px;">${advisor}</div></div>
         ${agenda.length ? `<div><div style="font-size:10px;opacity:0.5;letter-spacing:1px;text-transform:uppercase;">Purpose</div><div style="font-size:13px;margin-top:2px;">${agenda.join(' · ')}</div></div>` : ''}
       </div>
     </div>
 
     <!-- Client Profile -->
-    ${(profileClientName || occupation || income || maritalStatus) ? `
+    ${(profileClientName || occupation || income || expenses || maritalStatus) ? `
     <div style="background:white;border:1px solid #d0daea;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
       <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b84a8;margin-bottom:14px;">🧑 Client Profile</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:${(maritalStatus === 'Married' && (spouseName || kids.length)) ? '16px' : '0'};">
@@ -1837,6 +1899,7 @@ function generateMOM() {
         ${maritalStatus ? `<div><div style="font-size:10px;color:#6b84a8;text-transform:uppercase;letter-spacing:1px;">Marital Status</div><div style="font-weight:600;color:#0f1f3d;margin-top:3px;">${maritalStatus === 'Married' ? '💍 Married' : '🙋 Single'}</div></div>` : ''}
         ${occupation ? `<div><div style="font-size:10px;color:#6b84a8;text-transform:uppercase;letter-spacing:1px;">Occupation</div><div style="font-weight:600;color:#0f1f3d;margin-top:3px;">${occupation}</div></div>` : ''}
         ${income ? `<div><div style="font-size:10px;color:#6b84a8;text-transform:uppercase;letter-spacing:1px;">Annual Income</div><div style="font-weight:600;color:#0f1f3d;margin-top:3px;">₹${Number(income).toLocaleString('en-IN')}</div></div>` : ''}
+        ${expenses ? `<div><div style="font-size:10px;color:#6b84a8;text-transform:uppercase;letter-spacing:1px;">Annual Expenses</div><div style="font-weight:600;color:#0f1f3d;margin-top:3px;">₹${Number(expenses).toLocaleString('en-IN')}</div></div>` : ''}
       </div>
       ${maritalStatus === 'Married' && (spouseName || kids.length) ? `
       <div style="border-top:1px solid #e8f0fd;padding-top:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;">
@@ -1849,7 +1912,7 @@ function generateMOM() {
     <div style="background:white;border:1px solid #e2e0d8;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
       <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#7a7a9a;margin-bottom:14px;">Investment, Insurance & Estate Planning Checklist</div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;">
-        ${[['Mutual Funds', mf],['Term Insurance', term],['Medical Insurance', medical],['Accidental Insurance', accidental],['Will & Estate Planning', estate]].map(([label, val]) => {
+        ${[['Mutual Funds', mf],['Term Insurance', term],['Medical Insurance', medical],['Accidental Insurance', accidental],['Will & Estate Planning', estate],['Fixed Deposit', fd],['Stocks', stocks],['Real Estate', realestate]].map(([label, val]) => {
           const icon = investmentIcons[label] || '📋';
           const hasYes = val === 'Yes';
           const hasNo  = val === 'No';
@@ -1867,7 +1930,7 @@ function generateMOM() {
       </div>
       ${goalDetails.length ? `<div style="margin-top:16px;">
         <div style="font-size:11px;font-weight:600;color:#7a7a9a;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Active Goals & Progress</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;">
           ${goalDetails.map(g => {
             const pct = g.pct !== null ? g.pct : null;
             const barColor = pct >= 75 ? '#2d9e4f' : pct >= 40 ? '#1044a3' : '#e05c1a';
@@ -1879,8 +1942,8 @@ function generateMOM() {
                 <div style="font-weight:600;font-size:13px;color:#0f1f3d;">${g.name}</div>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:11px;color:#6b84a8;margin-bottom:4px;">
-                <span>Target: <strong style="color:#0f1f3d">${fmt(g.target)}</strong></span>
-                <span>Saved: <strong style="color:#0f1f3d">${fmt(g.accumulated)}</strong></span>
+                <span style="white-space:nowrap;">Target: <strong style="color:#0f1f3d">${fmt(g.target)}</strong></span>
+                <span style="white-space:nowrap;">Accumulated: <strong style="color:#0f1f3d">${fmt(g.accumulated)}</strong></span>
               </div>
               ${pct !== null ? `
               <div style="background:#d0daea;height:6px;border-radius:99px;overflow:hidden;margin-bottom:4px;">
@@ -1894,54 +1957,49 @@ function generateMOM() {
     </div>
 
     <!-- Previous Meeting Review -->
-    ${prevRows.length || lastDate ? `
-    <div style="background:white;border:1px solid #e2e0d8;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#7a7a9a;margin-bottom:14px;">Previous Meeting Review</div>
+    ${(prevOurRecs.length || prevClientRecs.length || lastDate) ? `
+    <div style="background:white;border:1px solid #d0daea;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b84a8;margin-bottom:14px;">To Do List from Previous Meeting</div>
       ${lastDate ? `<div style="background:#f8f7f4;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;gap:24px;flex-wrap:wrap;">
         <div><span style="font-size:11px;color:#7a7a9a;text-transform:uppercase;letter-spacing:1px;">Last Meeting</span><div style="font-weight:600;margin-top:2px;">${formatDate(lastDate)}</div></div>
-        ${lastPurpose ? `<div><span style="font-size:11px;color:#7a7a9a;text-transform:uppercase;letter-spacing:1px;">Purpose</span><div style="font-weight:600;margin-top:2px;">${lastPurpose}</div></div>` : ''}
       </div>` : ''}
-      ${prevRows.length ? `
-      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-        <thead><tr style="background:#1a1a2e;">
-          <th style="padding:9px 12px;text-align:left;color:white;font-weight:500;font-size:11px;border-radius:6px 0 0 0;">#</th>
-          <th style="padding:9px 12px;text-align:left;color:white;font-weight:500;font-size:11px;">Recommendation</th>
-          <th style="padding:9px 12px;text-align:left;color:white;font-weight:500;font-size:11px;">Type</th>
-          <th style="padding:9px 12px;text-align:left;color:white;font-weight:500;font-size:11px;">Status</th>
-          <th style="padding:9px 12px;text-align:left;color:white;font-weight:500;font-size:11px;border-radius:0 6px 0 0;">Remarks</th>
-        </tr></thead>
-        <tbody>
-          ${prevRows.map((r, i) => `
-            <tr style="border-bottom:1px solid #e2e0d8;">
-              <td style="padding:9px 12px;color:#7a7a9a;font-weight:600;">${i+1}</td>
-              <td style="padding:9px 12px;">${r.rec}</td>
-              <td style="padding:9px 12px;color:#7a7a9a;">${r.type || '—'}</td>
-              <td style="padding:9px 12px;"><span style="background:${badgeBg(r.status)};color:${badgeColor(r.status)};font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;">${r.status || '—'}</span></td>
-              <td style="padding:9px 12px;color:#3d3d5c;">${r.remarks || '—'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>` : ''}
-    </div>` : ''}
-
-    <!-- Discussion Summary -->
-    ${discussion.length ? `
-    <div style="background:white;border:1px solid #e2e0d8;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#7a7a9a;margin-bottom:14px;">Discussion Summary</div>
-      <ul style="list-style:none;padding:0;">
-        ${discussion.map(d => `
-          <li style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #f0ede8;">
-            <div style="width:7px;height:7px;border-radius:50%;background:#1a5fd4;margin-top:6px;flex-shrink:0;"></div>
-            <span style="font-size:13.5px;color:#1a1a2e;">${d}</span>
-          </li>
-        `).join('')}
-      </ul>
+      ${(prevOurRecs.length || prevClientRecs.length) ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="background:#e8f0fd;border-left:3px solid #1044a3;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1044a3;">🏢 Our End</div>
+          ${prevOurRecs.length ? prevOurRecs.map((r, i) => `
+            <div style="border:1px solid #d0daea;border-radius:7px;padding:11px 13px;margin-bottom:8px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:#1044a3;color:white;font-size:10px;font-weight:700;display:grid;place-items:center;flex-shrink:0;">${i+1}</div>
+                <div>
+                  <div style="font-size:13px;color:#0f1f3d;font-weight:500;line-height:1.4;">${r.text}</div>
+                  ${r.status ? `<div style="margin-top:6px;"><span style="background:${badgeBg(r.status)};color:${badgeColor(r.status)};font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;">${decIcon(r.status)} ${r.status}</span></div>` : ''}
+                </div>
+              </div>
+            </div>
+          `).join('') : '<div style="font-size:12.5px;color:#6b84a8;">No actions</div>'}
+        </div>
+        <div>
+          <div style="background:#fef6e4;border-left:3px solid #c47c05;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c47c05;">👤 Client End</div>
+          ${prevClientRecs.length ? prevClientRecs.map((r, i) => `
+            <div style="border:1px solid #e2e0d8;border-radius:7px;padding:11px 13px;margin-bottom:8px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <div style="width:22px;height:22px;border-radius:50%;background:#c47c05;color:white;font-size:10px;font-weight:700;display:grid;place-items:center;flex-shrink:0;">${i+1}</div>
+                <div>
+                  <div style="font-size:13px;color:#0f1f3d;font-weight:500;line-height:1.4;">${r.text}</div>
+                  ${r.status ? `<div style="margin-top:6px;"><span style="background:${badgeBg(r.status)};color:${badgeColor(r.status)};font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;">${decIcon(r.status)} ${r.status}</span></div>` : ''}
+                </div>
+              </div>
+            </div>
+          `).join('') : '<div style="font-size:12.5px;color:#6b84a8;">No actions</div>'}
+        </div>
+      </div>` : ''}
     </div>` : ''}
 
     <!-- To Do List Two-Column -->
     ${(ourRecs.length || clientRecs.length) ? `
     <div style="background:white;border:1px solid #d0daea;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b84a8;margin-bottom:16px;">To Do List</div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b84a8;margin-bottom:16px;">To Do List from Current Meeting</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div>
           <div style="background:#e8f0fd;border-left:3px solid #1044a3;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1044a3;">🏢 Our End</div>
@@ -1972,6 +2030,20 @@ function generateMOM() {
       </div>
     </div>` : ''}
 
+    <!-- Discussion Summary -->
+    ${discussion.length ? `
+    <div style="background:white;border:1px solid #e2e0d8;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#7a7a9a;margin-bottom:14px;">Discussion Summary</div>
+      <ul style="list-style:none;padding:0;">
+        ${discussion.map(d => `
+          <li style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #f0ede8;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#1a5fd4;margin-top:6px;flex-shrink:0;"></div>
+            <span style="font-size:13.5px;color:#1a1a2e;overflow-wrap:anywhere;white-space:pre-wrap;">${d}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>` : ''}
+
     <!-- Follow-up -->
     ${showFollowupInDraft !== 'No' ? followupReq === 'Yes' ? `
     <div style="background:linear-gradient(to right,#e8f0fd,white);border:1.5px solid #1a5fd4;border-radius:10px;padding:22px 24px;margin-bottom:18px;">
@@ -1988,6 +2060,7 @@ function generateMOM() {
 
     <!-- Footer -->
     <div style="text-align:center;padding:20px;color:#aaa;font-size:11px;letter-spacing:0.5px;">
+      <div style="margin-bottom:12px;font-size:12px;line-height:1.4;color:#888;">These Minutes of Meeting have been prepared based on our discussions and summarize the key points and agreed action items. If you have any questions or require any clarification, please feel free to contact our team.</div>
       Document generated on ${formatDate(new Date().toISOString().split('T')[0])} · Team Fintness · Confidential
     </div>
   </div>
@@ -2004,7 +2077,7 @@ function generateMOM() {
 const originalTitle = document.title;
 function printMOM() {
   const num = document.getElementById('meetingNumber').value || '';
-  const client = document.getElementById('clientName').value || 'Client';
+  const client = document.getElementById('profileClientName').value || 'Client';
   const filename = num ? `Minutes of Meeting - ${num}_${client}` : `Minutes of Meeting_${client}`;
   document.title = filename;
   window.print();
@@ -2092,7 +2165,7 @@ async function handlePDFUpload(event) {
     { "name": "", "target": 0, "accumulated": 0 }
   ],
   "lastMeetingDate": "YYYY-MM-DD format",
-  "lastMeetingPurpose": "",
+
   "previousRecs": [
     { "rec": "", "type": "", "status": "", "remarks": "" }
   ],
@@ -2156,9 +2229,8 @@ function fillFormFromJSON(d) {
 
   // Section 01
   set('meetingNumber', d.meetingNumber);
-  set('clientName', d.clientName);
+  set('profileClientName', d.clientName);
   set('meetingDate', d.meetingDate);
-  set('meetingTime', d.meetingTime);
   set('advisorName', d.advisorName);
 
   // Meeting Mode
@@ -2175,7 +2247,8 @@ function fillFormFromJSON(d) {
   const invMap = {
     'mf': d.mutualFunds, 'term': d.termInsurance,
     'medical': d.medicalInsurance, 'accidental': d.accidentalInsurance,
-    'estate': d.estateInsurance
+    'estate': d.estateInsurance, 'fd': d.fixedDeposit,
+    'stocks': d.stocks, 'realestate': d.realEstate
   };
   Object.entries(invMap).forEach(([field, val]) => {
     if (!val) return;
@@ -2209,30 +2282,39 @@ function fillFormFromJSON(d) {
         addCustomGoal();
       }
       setTimeout(() => {
-        const tEl = document.getElementById('gt-' + g.name);
-        const aEl = document.getElementById('ga-' + g.name);
-        if (tEl) { tEl.value = g.target || ''; updateGoalCalc(g.name); }
-        if (aEl) { aEl.value = g.accumulated || ''; updateGoalCalc(g.name); }
+        const safeId = btoa(encodeURIComponent(g.name)).replace(/=/g, '');
+        const tEl = document.getElementById('gt-' + safeId);
+        const aEl = document.getElementById('ga-' + safeId);
+        if (tEl) { tEl.value = g.target || ''; }
+        if (aEl) { aEl.value = g.accumulated || ''; }
+        updateGoalCalc(g.name, safeId);
       }, 100);
     });
   }
 
   // Section 03
-  set('lastMeetingDate', d.lastMeetingDate);
-  set('lastMeetingPurpose', d.lastMeetingPurpose);
-  if (d.previousRecs && d.previousRecs.length) {
-    // clear existing rows
-    document.getElementById('prevRecBody').innerHTML = '';
-    prevRecCount = 0;
-    d.previousRecs.forEach(r => {
-      addPrevRec();
-      const row = document.getElementById('prevRec' + prevRecCount);
-      if (!row) return;
-      const inputs = row.querySelectorAll('input, select');
-      if (inputs[0]) inputs[0].value = r.rec || '';
-      if (inputs[1]) inputs[1].value = r.type || '';
-      if (inputs[2]) { inputs[2].value = r.status || ''; styleStatusCell(inputs[2]); }
-      if (inputs[3]) inputs[3].value = r.remarks || '';
+  if (d.meetingDate) set('lastMeetingDate', d.meetingDate);
+  else set('lastMeetingDate', d.lastMeetingDate);
+
+  document.getElementById('prevOurEndCards').innerHTML = '';
+  document.getElementById('prevClientEndCards').innerHTML = '';
+  prevOurRecCount = 0;
+  prevClientRecCount = 0;
+
+  if (d.ourRecs && d.ourRecs.length) {
+    d.ourRecs.forEach(r => {
+      addPrevRecCard('our');
+      const num = prevOurRecCount;
+      const txtEl = document.getElementById(`recText-prev-our-${num}`);
+      if (txtEl) txtEl.value = r.text || '';
+    });
+  }
+  if (d.clientRecs && d.clientRecs.length) {
+    d.clientRecs.forEach(r => {
+      addPrevRecCard('client');
+      const num = prevClientRecCount;
+      const txtEl = document.getElementById(`recText-prev-cli-${num}`);
+      if (txtEl) txtEl.value = r.text || '';
     });
   }
 
@@ -2260,52 +2342,10 @@ function fillFormFromJSON(d) {
   }
 
   // Section 06 — recommendations
-  if (d.ourRecs && d.ourRecs.length) {
-    document.getElementById('ourEndCards').innerHTML = '';
-    ourRecCount = 0;
-    d.ourRecs.forEach(r => {
-      addRecCard('our');
-      const textEl = document.getElementById('recText-our-' + ourRecCount);
-      if (textEl) textEl.value = r.text || '';
-      if (r.decision) {
-        const decEl = document.getElementById('recDec-our-' + ourRecCount);
-        if (decEl) decEl.value = r.decision;
-        const card = document.getElementById('rec-our-' + ourRecCount);
-        if (card) {
-          card.querySelectorAll('.decision-opt').forEach(o => {
-            o.classList.remove('agreed','not-agreed','thinking');
-            if (o.textContent.includes(r.decision)) {
-              const cls = r.decision === 'Agreed' ? 'agreed' : r.decision === 'Not Agreed' ? 'not-agreed' : 'thinking';
-              o.classList.add(cls);
-            }
-          });
-        }
-      }
-    });
-  }
-  if (d.clientRecs && d.clientRecs.length) {
-    document.getElementById('clientEndCards').innerHTML = '';
-    clientRecCount = 0;
-    d.clientRecs.forEach(r => {
-      addRecCard('client');
-      const textEl = document.getElementById('recText-cli-' + clientRecCount);
-      if (textEl) textEl.value = r.text || '';
-      if (r.decision) {
-        const decEl = document.getElementById('recDec-cli-' + clientRecCount);
-        if (decEl) decEl.value = r.decision;
-        const card = document.getElementById('rec-cli-' + clientRecCount);
-        if (card) {
-          card.querySelectorAll('.decision-opt').forEach(o => {
-            o.classList.remove('agreed','not-agreed','thinking');
-            if (o.textContent.includes(r.decision)) {
-              const cls = r.decision === 'Agreed' ? 'agreed' : r.decision === 'Not Agreed' ? 'not-agreed' : 'thinking';
-              o.classList.add(cls);
-            }
-          });
-        }
-      }
-    });
-  }
+  document.getElementById('ourEndCards').innerHTML = '';
+  ourRecCount = 0;
+  document.getElementById('clientEndCards').innerHTML = '';
+  clientRecCount = 0;
 
   // Section 07 — follow-up
   if (d.followupRequired) {
