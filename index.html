@@ -659,8 +659,8 @@
 
     .page {
       padding: 0 !important;
-      margin: 0 !important;
-      max-width: 100% !important;
+      margin: 0 auto !important;
+      max-width: 850px !important;
     }
 
     /* Draft section — remove screen shadow, keep everything else */
@@ -668,6 +668,8 @@
       border: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+      max-width: 850px !important;
+      margin: 0 auto !important;
     }
 
     /* Force all backgrounds, colors, borders to print as-is */
@@ -2245,10 +2247,10 @@ function fillFormFromJSON(d) {
     let foundOpt = Array.from(occEl.options).find(opt => opt.value.toLowerCase() === d.occupation.toLowerCase());
     if (foundOpt) {
       occEl.value = foundOpt.value;
-      document.getElementById('occOtherWrap').style.display = 'none';
+      document.getElementById('occupationOtherField').style.display = 'none';
     } else {
       occEl.value = 'Others';
-      document.getElementById('occOtherWrap').style.display = 'block';
+      document.getElementById('occupationOtherField').style.display = 'block';
       set('occupationOther', d.occupation);
     }
   }
