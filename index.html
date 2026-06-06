@@ -2239,13 +2239,38 @@ ${fullText}`;
 function fillFormFromJSON(d) {
   const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
 
-  // Section 01
+  // Helper: programmatically click the toggle option whose text includes targetVal
+  function clickToggle(hiddenId, targetVal) {
+    if (!targetVal) return;
+    const hidden = document.getElementById(hiddenId);
+    if (!hidden) return;
+    const field = hidden.closest('.field') || hidden.parentElement;
+    if (!field) return;
+    field.querySelectorAll('.toggle-opt').forEach(o => {
+      if (o.textContent.includes(targetVal)) o.click();
+    });
+  }
+
+  // Helper: programmatically click a decision option inside a card
+  function clickDecision(cardId, targetVal) {
+    if (!targetVal) return;
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.querySelectorAll('.decision-opt').forEach(o => {
+      if (o.textContent.includes(targetVal)) o.click();
+    });
+  }
+
+  // ── Section 01 — Basic Details ──
   set('meetingNumber', d.meetingNumber);
   set('profileClientName', d.clientName);
   set('meetingDate', d.meetingDate);
   set('advisorName', d.advisorName);
 
-  // Client Profile
+  // Meeting Mode (buttons have emojis like 📞 Call, so .includes works)
+  if (d.meetingMode) clickToggle('meetingMode', d.meetingMode);
+
+  // ── Section 02 — Client Profile ──
   const occEl = document.getElementById('occupation');
   if (occEl && d.occupation) {
     let foundOpt = Array.from(occEl.options).find(opt => opt.value.toLowerCase() === d.occupation.toLowerCase());
@@ -2260,22 +2285,13 @@ function fillFormFromJSON(d) {
   }
   set('income', d.income);
   set('expenses', d.expenses);
-  
+
+  // Marital Status (buttons have emojis: 💍 Married / 🙋 Single — .click() triggers toggleSpouse too)
   if (d.maritalStatus) {
     const ms = d.maritalStatus.toLowerCase().includes('married') ? 'Married' : 'Single';
-    set('maritalStatus', ms);
-    const hidden = document.getElementById('maritalStatus');
-    const group = hidden?.previousElementSibling;
-    if (group) {
-      group.querySelectorAll('.toggle-opt').forEach(o => {
-        o.classList.remove('selected-yes', 'selected-no');
-        if (o.textContent.trim() === ms) {
-          o.classList.add(ms === 'Married' ? 'selected-yes' : 'selected-no');
-        }
-      });
-    }
+    clickToggle('maritalStatus', ms);
+    // After toggle fires, fill spouse/kids data
     if (ms === 'Married') {
-      if (typeof toggleSpouse === 'function') toggleSpouse(true);
       set('spouseName', d.spouseName);
       if (d.kids && d.kids.length) {
         set('numKids', d.kids.length);
@@ -2288,17 +2304,7 @@ function fillFormFromJSON(d) {
     }
   }
 
-  // Meeting Mode
-  if (d.meetingMode) {
-    document.querySelectorAll('#sec0 .toggle-opt').forEach(o => {
-      if (o.textContent.includes(d.meetingMode)) {
-        o.classList.add('selected-yes');
-        document.getElementById('meetingMode').value = d.meetingMode;
-      }
-    });
-  }
-
-  // Section 02 — investments
+  // ── Section 03 — Investments & Insurance ──
   const invMap = {
     'mf': d.mutualFunds, 'term': d.termInsurance,
     'medical': d.medicalInsurance, 'accidental': d.accidentalInsurance,
@@ -2307,23 +2313,13 @@ function fillFormFromJSON(d) {
   };
   Object.entries(invMap).forEach(([field, val]) => {
     if (!val) return;
-    const hidden = document.getElementById(field);
-    if (hidden) hidden.value = val;
-    const group = hidden?.previousElementSibling;
-    if (group) {
-      group.querySelectorAll('.toggle-opt').forEach(o => {
-        o.classList.remove('selected-yes','selected-no');
-        if (o.textContent.trim() === val)
-          o.classList.add(val === 'Yes' ? 'selected-yes' : 'selected-no');
-      });
-    }
+    clickToggle(field, val);
   });
 
   // Goals
   if (d.goals && d.goals.length) {
     d.goals.forEach(g => {
       if (!g.name) return;
-      // find chip
       const chips = document.querySelectorAll('#goalChips .chip');
       let found = false;
       chips.forEach(chip => {
@@ -2348,7 +2344,8 @@ function fillFormFromJSON(d) {
     });
   }
 
-  // Section 03
+  // ── Section 04 — Previous Meeting To Do List ──
+  // Shift: uploaded PDF's current recs → new form's previous recs; current left blank
   if (d.meetingDate) set('lastMeetingDate', d.meetingDate);
   else set('lastMeetingDate', d.lastMeetingDate);
 
@@ -2359,22 +2356,26 @@ function fillFormFromJSON(d) {
 
   if (d.ourRecs && d.ourRecs.length) {
     d.ourRecs.forEach(r => {
+      if (!r.text) return;
       addPrevRecCard('our');
       const num = prevOurRecCount;
       const txtEl = document.getElementById(`recText-prev-our-${num}`);
-      if (txtEl) txtEl.value = r.text || '';
+      if (txtEl) txtEl.value = r.text;
+      if (r.decision) clickDecision(`rec-prev-our-${num}`, r.decision);
     });
   }
   if (d.clientRecs && d.clientRecs.length) {
     d.clientRecs.forEach(r => {
+      if (!r.text) return;
       addPrevRecCard('client');
       const num = prevClientRecCount;
       const txtEl = document.getElementById(`recText-prev-cli-${num}`);
-      if (txtEl) txtEl.value = r.text || '';
+      if (txtEl) txtEl.value = r.text;
+      if (r.decision) clickDecision(`rec-prev-cli-${num}`, r.decision);
     });
   }
 
-  // Section 04 — agenda chips
+  // ── Section 05 — Agenda chips ──
   if (d.agenda && d.agenda.length) {
     const others = [];
     d.agenda.forEach(a => {
@@ -2390,36 +2391,32 @@ function fillFormFromJSON(d) {
     if (others.length) set('agendaOther', others.join(', '));
   }
 
-  // Section 05 — discussion
+  // ── Section 06 — Discussion ──
   if (d.discussion && d.discussion.length) {
     document.getElementById('discussionList').innerHTML = '';
     discussionCount = 0;
     d.discussion.forEach(point => {
+      if (!point) return;
       addBullet('discussionList');
       const inputs = document.querySelectorAll('#discussionList .bullet-item textarea');
       if (inputs.length) {
-        inputs[inputs.length - 1].value = point;
+        // Convert literal \n sequences to real newlines for proper display
+        const cleaned = point.replace(/\\n/g, '\n');
+        inputs[inputs.length - 1].value = cleaned;
         autoGrowTextarea(inputs[inputs.length - 1]);
       }
     });
   }
 
-  // Section 06 — recommendations
+  // ── Section 07 — Current Meeting To Do List (left blank for new meeting) ──
   document.getElementById('ourEndCards').innerHTML = '';
   ourRecCount = 0;
   document.getElementById('clientEndCards').innerHTML = '';
   clientRecCount = 0;
 
-  // Section 07 — follow-up
+  // ── Section 08 — Follow-up ──
   if (d.followupRequired) {
-    const hidden = document.getElementById('followupReq');
-    if (hidden) hidden.value = d.followupRequired;
-    document.querySelectorAll('#sec7 .toggle-group:first-of-type .toggle-opt').forEach(o => {
-      o.classList.remove('selected-yes','selected-no');
-      if (o.textContent.trim() === d.followupRequired)
-        o.classList.add(d.followupRequired === 'Yes' ? 'selected-yes' : 'selected-no');
-    });
-    toggleFollowup(d.followupRequired === 'Yes');
+    clickToggle('followupReq', d.followupRequired);
   }
   set('followupDate', d.followupDate);
   set('followupPurpose', d.followupPurpose);
