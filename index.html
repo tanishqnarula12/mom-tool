@@ -2141,7 +2141,7 @@ async function handlePDFUpload(event) {
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      fullText += textContent.items.map(item => item.str).join(' ') + '\n';
+      fullText += textContent.items.map(item => item.str + (item.hasEOL ? '\n' : ' ')).join('') + '\n';
     }
     setStep(1, 'done');
 
@@ -2152,6 +2152,12 @@ async function handlePDFUpload(event) {
 {
   "meetingNumber": "just the number part e.g. 05",
   "clientName": "",
+  "occupation": "",
+  "income": "",
+  "expenses": "",
+  "maritalStatus": "Single or Married",
+  "spouseName": "",
+  "kids": [{ "name": "", "age": "" }],
   "advisorName": "",
   "meetingDate": "YYYY-MM-DD format",
   "meetingTime": "HH:MM format",
@@ -2170,7 +2176,7 @@ async function handlePDFUpload(event) {
     { "rec": "", "type": "", "status": "", "remarks": "" }
   ],
   "agenda": [""],
-  "discussion": [""],
+  "discussion": ["array of strings, preserve newlines within each point using \\n"],
   "ourRecs": [
     { "text": "", "decision": "" }
   ],
@@ -2232,6 +2238,39 @@ function fillFormFromJSON(d) {
   set('profileClientName', d.clientName);
   set('meetingDate', d.meetingDate);
   set('advisorName', d.advisorName);
+
+  // Client Profile
+  const occEl = document.getElementById('occupation');
+  if (occEl && d.occupation) {
+    let foundOcc = Array.from(occEl.options).some(opt => opt.value === d.occupation);
+    if (foundOcc) {
+      occEl.value = d.occupation;
+      document.getElementById('occOtherWrap').style.display = 'none';
+    } else {
+      occEl.value = 'Others';
+      document.getElementById('occOtherWrap').style.display = 'block';
+      set('occupationOther', d.occupation);
+    }
+  }
+  set('income', d.income);
+  set('expenses', d.expenses);
+  
+  if (d.maritalStatus) {
+    const ms = d.maritalStatus.toLowerCase().includes('married') ? 'Married' : 'Single';
+    set('maritalStatus', ms);
+    if (ms === 'Married') {
+      if (typeof toggleSpouse === 'function') toggleSpouse(true);
+      set('spouseName', d.spouseName);
+      if (d.kids && d.kids.length) {
+        set('numKids', d.kids.length);
+        if (typeof updateKidRows === 'function') updateKidRows(d.kids.length);
+        d.kids.forEach((k, idx) => {
+          set('kidName' + (idx+1), k.name);
+          set('kidAge' + (idx+1), k.age);
+        });
+      }
+    }
+  }
 
   // Meeting Mode
   if (d.meetingMode) {
