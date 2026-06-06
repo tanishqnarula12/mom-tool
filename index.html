@@ -2169,6 +2169,9 @@ async function handlePDFUpload(event) {
   "medicalInsurance": "Yes or No",
   "accidentalInsurance": "Yes or No",
   "estateInsurance": "Yes or No",
+  "fixedDeposit": "Yes or No",
+  "stocks": "Yes or No",
+  "realEstate": "Yes or No",
   "goals": [
     { "name": "", "target": 0, "accumulated": 0 }
   ],
@@ -2178,7 +2181,7 @@ async function handlePDFUpload(event) {
     { "rec": "", "type": "", "status": "", "remarks": "" }
   ],
   "agenda": [""],
-  "discussion": ["array of strings. Combine multiple lines/bullets of the same point into a single string using \\n. DO NOT create a new array item for every single line. Group related lines together"],
+  "discussion": ["array of strings. Each item is ONE distinct discussion point. If a distinct point has multiple lines/bullets, merge them into the same string using \\n. Do not merge separate distinct discussion topics into one item."],
   "ourRecs": [
     { "text": "", "decision": "" }
   ],
