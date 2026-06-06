@@ -628,7 +628,7 @@
   /* ─── PRINT STYLES ─── */
   @media print {
     @page {
-      margin: 12mm 14mm;
+      margin: 8mm 10mm;
       size: A4;
     }
 
@@ -659,8 +659,8 @@
 
     .page {
       padding: 0 !important;
-      margin: 0 auto !important;
-      max-width: 850px !important;
+      margin: 0 !important;
+      max-width: 100% !important;
     }
 
     /* Draft section — remove screen shadow, keep everything else */
@@ -668,8 +668,9 @@
       border: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-      max-width: 850px !important;
-      margin: 0 auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: 100% !important;
     }
 
     /* Force all backgrounds, colors, borders to print as-is */
@@ -2263,6 +2264,16 @@ function fillFormFromJSON(d) {
   if (d.maritalStatus) {
     const ms = d.maritalStatus.toLowerCase().includes('married') ? 'Married' : 'Single';
     set('maritalStatus', ms);
+    const hidden = document.getElementById('maritalStatus');
+    const group = hidden?.previousElementSibling;
+    if (group) {
+      group.querySelectorAll('.toggle-opt').forEach(o => {
+        o.classList.remove('selected-yes', 'selected-no');
+        if (o.textContent.trim() === ms) {
+          o.classList.add(ms === 'Married' ? 'selected-yes' : 'selected-no');
+        }
+      });
+    }
     if (ms === 'Married') {
       if (typeof toggleSpouse === 'function') toggleSpouse(true);
       set('spouseName', d.spouseName);
