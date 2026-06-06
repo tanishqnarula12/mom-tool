@@ -2156,8 +2156,8 @@ async function handlePDFUpload(event) {
   "meetingNumber": "just the number part e.g. 05",
   "clientName": "",
   "occupation": "",
-  "income": "",
-  "expenses": "",
+  "income": "just the number without currency symbol or commas e.g. 1200000",
+  "expenses": "just the number without currency symbol or commas e.g. 600000",
   "maritalStatus": "Single or Married",
   "spouseName": "",
   "kids": [{ "name": "", "age": "" }],
@@ -2283,8 +2283,10 @@ function fillFormFromJSON(d) {
       set('occupationOther', d.occupation);
     }
   }
-  set('income', d.income);
-  set('expenses', d.expenses);
+  // Strip non-digits for number inputs
+  const numOnly = v => v ? String(v).replace(/[^0-9]/g, '') : '';
+  set('income', numOnly(d.income));
+  set('expenses', numOnly(d.expenses));
 
   // Marital Status (buttons have emojis: 💍 Married / 🙋 Single — .click() triggers toggleSpouse too)
   if (d.maritalStatus) {
