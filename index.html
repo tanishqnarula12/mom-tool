@@ -2176,7 +2176,7 @@ async function handlePDFUpload(event) {
     { "rec": "", "type": "", "status": "", "remarks": "" }
   ],
   "agenda": [""],
-  "discussion": ["array of strings, preserve newlines within each point using \\n"],
+  "discussion": ["array of strings. Combine multiple lines/bullets of the same point into a single string using \\n. DO NOT create a new array item for every single line. Group related lines together"],
   "ourRecs": [
     { "text": "", "decision": "" }
   ],
@@ -2242,9 +2242,9 @@ function fillFormFromJSON(d) {
   // Client Profile
   const occEl = document.getElementById('occupation');
   if (occEl && d.occupation) {
-    let foundOcc = Array.from(occEl.options).some(opt => opt.value === d.occupation);
-    if (foundOcc) {
-      occEl.value = d.occupation;
+    let foundOpt = Array.from(occEl.options).find(opt => opt.value.toLowerCase() === d.occupation.toLowerCase());
+    if (foundOpt) {
+      occEl.value = foundOpt.value;
       document.getElementById('occOtherWrap').style.display = 'none';
     } else {
       occEl.value = 'Others';
@@ -2311,9 +2311,10 @@ function fillFormFromJSON(d) {
       const chips = document.querySelectorAll('#goalChips .chip');
       let found = false;
       chips.forEach(chip => {
-        if (chip.textContent.trim() === g.name) {
-          if (!chip.classList.contains('selected')) toggleGoalChip(chip, g.name);
+        if (chip.textContent.trim().toLowerCase() === g.name.toLowerCase()) {
+          if (!chip.classList.contains('selected')) toggleGoalChip(chip, chip.textContent.trim());
           found = true;
+          g.name = chip.textContent.trim();
         }
       });
       if (!found) {
@@ -2359,11 +2360,18 @@ function fillFormFromJSON(d) {
 
   // Section 04 — agenda chips
   if (d.agenda && d.agenda.length) {
-    document.querySelectorAll('#agendaChips .chip').forEach(chip => {
-      if (d.agenda.some(a => chip.textContent.trim().toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chip.textContent.trim().toLowerCase()))) {
-        chip.classList.add('selected');
-      }
+    const others = [];
+    d.agenda.forEach(a => {
+      let matched = false;
+      document.querySelectorAll('#agendaChips .chip').forEach(chip => {
+        if (chip.textContent.trim().toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chip.textContent.trim().toLowerCase())) {
+          chip.classList.add('selected');
+          matched = true;
+        }
+      });
+      if (!matched && a.trim() !== '') others.push(a);
     });
+    if (others.length) set('agendaOther', others.join(', '));
   }
 
   // Section 05 — discussion
