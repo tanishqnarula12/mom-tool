@@ -1276,8 +1276,8 @@
       <div class="field" style="margin-bottom:18px;">
         <label>Follow-up Required?</label>
         <div class="toggle-group" style="max-width:240px;">
-          <div class="toggle-opt" onclick="setToggle(this,'followupReq','Yes');toggleFollowup(true)">Yes</div>
-          <div class="toggle-opt" onclick="setToggle(this,'followupReq','No');toggleFollowup(false)">No</div>
+          <div class="toggle-opt" onclick="setToggle(this,'followupReq','Yes');toggleFollowup(document.getElementById('followupReq').value === 'Yes')">Yes</div>
+          <div class="toggle-opt" onclick="setToggle(this,'followupReq','No');toggleFollowup(document.getElementById('followupReq').value === 'Yes')">No</div>
         </div>
         <input type="hidden" id="followupReq" value="">
       </div>
@@ -1469,11 +1469,16 @@ function selectMode(el, val) {
 // ─── YES/NO TOGGLES ───
 function setToggle(el, field, val) {
   const group = el.parentElement;
+  const isAlreadySelected = el.classList.contains('selected-yes') || el.classList.contains('selected-no');
   group.querySelectorAll('.toggle-opt').forEach(o => {
     o.classList.remove('selected-yes', 'selected-no');
   });
-  el.classList.add(val === 'Yes' ? 'selected-yes' : 'selected-no');
-  document.getElementById(field).value = val;
+  if (isAlreadySelected) {
+    document.getElementById(field).value = '';
+  } else {
+    el.classList.add(val === 'Yes' ? 'selected-yes' : 'selected-no');
+    document.getElementById(field).value = val;
+  }
 }
 
 // ─── CHIPS ───
